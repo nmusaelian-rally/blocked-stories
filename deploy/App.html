@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blocked Stories</title>
+
+    <script type="text/javascript" src="/apps/2.0rc2/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+                Ext.define("CustomApp",{extend:"Rally.app.App",componentCls:"app",scopeType:"iteration",comboboxConfig:{labelWidth:100,width:300},launch:function(){var that=this,iterationComboBox=Ext.create("Rally.ui.combobox.IterationComboBox",{listeners:{ready:function(combobox){var iterationOid=combobox.getRecord().get("ObjectID");that._loadStories(iterationOid)},select:function(combobox){var iterationOid=combobox.getRecord().get("ObjectID");this._loadStories(iterationOid)},scope:this}});this.add(iterationComboBox)},_loadStories:function(iterationOid){var snapshotStore=Ext.create("Rally.data.lookback.SnapshotStore",{autoLoad:!0,find:{_TypeHierarchy:"HierarchicalRequirement",_ProjectHierarchy:12352608219,"_PreviousValues.Blocked":{$exists:!0},Iteration:iterationOid},fetch:["Name","FormattedID","ScheduleState","Blocked","_ValidFrom","_ValidTo","BlockedReason","PlanEstimate"],order:"OpenedDate DESC",hydrate:["Blocked","ScheduleState"],compress:!0,listeners:{load:function(store,records,success){console.log("loaded %i records",records.length),this._makeGrid(snapshotStore)},scope:this}})},_makeGrid:function(snapshotStore){this._myGrid=Ext.create("Ext.grid.Panel",{store:snapshotStore,columns:[{text:"ID",dataIndex:"FormattedID",xtype:"templatecolumn",tpl:Ext.create("Rally.ui.renderer.template.FormattedIDTemplate")},{text:"Name",dataIndex:"Name"},{text:"Blocked",dataIndex:"Blocked"},{text:"_ValidFrom",dataIndex:"_ValidFrom",flex:1},{text:"_ValidTo",dataIndex:"_ValidTo",flex:1},{text:"Schedule State",dataIndex:"ScheduleState"},{text:"Project",dataIndex:"Project"}],height:400}),this.add(this._myGrid)}});
+
+            Rally.launchApp('CustomApp', {
+                name:"Blocked Stories",
+	            parentRepos:""
+            });
+
+        });
+    </script>
+
+
+    <style type="text/css">
+        .app {
+     /* Add app styles here */
+}
+
+    </style>
+</head>
+<body></body>
+</html>
